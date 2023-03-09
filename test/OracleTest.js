@@ -8,12 +8,19 @@ describe("TestOracle", function () {
     const PriceConsumer = await ethers.getContractFactory("PriceConsumerV3");
     const priceConsumer = await PriceConsumer.deploy(mockOracle.address);
 
-    return mockOracle, priceConsumer;
+    return { mockOracle, priceConsumer };
   }
 
   it("get oracle initial answer", async function () {
     const { mockOracle, priceConsumer } = await deployContractsFixture();
     const answer = await priceConsumer.getLatestPrice();
-    console.log(answer);
+    expect(Number(answer)).to.equal(1000);
+  });
+
+  it("change mock data and get new oracle answer", async function () {
+    const { mockOracle, priceConsumer } = await deployContractsFixture();
+    mockOracle.updateAnswer("2000");
+    const answer = await priceConsumer.getLatestPrice();
+    expect(Number(answer)).to.equal(2000);
   });
 });
